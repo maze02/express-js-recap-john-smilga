@@ -1,10 +1,19 @@
 const express = require('express')
-const app = express()
+const server = express()
 const { products } = require('./data')
-app.get('/', (req, res) => {
-  res.json(products)
+/*
+server.get('/', (request, response) => {
+  response.status(200).json([{ name: 'john' }, { name: 'susan' }])
+})
+*/
+
+server.get('/', (request, response) => {
+  response.status(200).json(products)
 })
 
-app.listen(5000, () => {
-  console.log('Server is listening on port 5000....')
+server.all('*', (req, res) => {
+  res.status(404).send('resource not found')
+})
+server.listen(5000, () => {
+  console.log('Server is listening on port 5000...')
 })

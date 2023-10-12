@@ -1,25 +1,27 @@
 const express = require('express')
 const app = express()
-//req => middleware =>res
-/*next refers to the next middleware function called 
-or to keep calling other middleware functions, unless you want 
-to terminate the cycle
-*/
-const logger = (request, response, next) => {
-  const method = request.method
-  const url = request.url
-  const time = new Date().getFullYear()
-  console.log(method, url, time)
-  next()
-}
+const morgan = require('morgan')
+const people = require('./routes/people')
+const auth = require('./routes/auth')
 
-app.get('/', logger, (request, response) => {
-  response.send('Home')
-})
+//static assets
+//app use will pass this middleware method- which grabs the static assets
+//and I believe sends them to the server -i.e.the html css js etc...
+app.use(express.static('./methods-public'))
 
-app.get('/about', logger, (request, response) => {
-  response.send('About')
-})
-app.listen(5000, () => {
-  console.log('Server is listening on port 5000... ')
+//parse form data - the extended flag is the standard
+app.use(express.urlencoded({ extended: false }))
+
+//parse json
+app.use(express.json())
+
+app.use(morgan('tiny'))
+
+//to import the routes and apply the middleware to them
+app.use('/api/people', people)
+
+app.use('/login', auth)
+
+app.listen(8000, () => {
+  console.log('Server is listening on port 8000....')
 })
